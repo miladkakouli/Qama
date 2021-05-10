@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\bin</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Qama.Framework.Core.Abstractions\Qama.Framework.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\Qama.Framework.Core.CommandBus.MediatR\Qama.Framework.Core.CommandBus.MediatR.csproj" />
+    <ProjectReference Include="..\Qama.Framework.Core.EventBus.MediatR\Qama.Framework.Core.EventBus.MediatR.csproj" />
+    <ProjectReference Include="..\Qama.Framework.Core.QueryBus.MediatR\Qama.Framework.Core.QueryBus.MediatR.csproj" />
+  </ItemGroup>
+
+</Project>
