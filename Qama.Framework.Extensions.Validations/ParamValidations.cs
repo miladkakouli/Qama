@@ -61,24 +61,15 @@ namespace Qama.Framework.Extensions.Validations
         }
         public static bool IsValidMobile(this string value)
         {
-            var resultIsMatch = Regex.IsMatch(value, "^(\\+989)([0-9]{9})$|^(989)([0-9]{9})$|^(09)([0-9]{9})$");
-            if (!resultIsMatch)
-                return false;
-            return true;
+            return Regex.IsMatch(value, "^(\\+989)([0-9]{9})$|^(989)([0-9]{9})$|^(09)([0-9]{9})$");
         }
         public static bool IsValidBrokerCode(this string value)
         {
-            var resultIsMatch = Regex.IsMatch(value, "^\\d{3}$");
-            if (!resultIsMatch)
-                return false;
-            return true;
+            return Regex.IsMatch(value, "^\\d{3}$");
         }
         public static bool IsValidCardSerial(this string value)
         {
-            var resultIsMatch = Regex.IsMatch(value, "^([\\d]{9})$|^([\\d]{1}[\\w][\\d]{8})$");
-            if (!resultIsMatch)
-                return false;
-            return true;
+            return Regex.IsMatch(value, "^([\\d]{9})$|^([\\d]{1}[\\w][\\d]{8})$");
         }
         public static bool IsValidInclusiveCode(this string value)
         {
@@ -108,24 +99,31 @@ namespace Qama.Framework.Extensions.Validations
         }
         public static bool IsValidIp(this string value)
         {
-            var resultIsMatch = Regex.IsMatch(value, "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
-            if (!resultIsMatch)
-                return false;
-            return true;
+            return Regex.IsMatch(value, "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
         }
         public static bool IsValidPersianDate(this string value)
         {
-            var resultIsMatch = Regex.IsMatch(value, "^[\\d]{4}\\/[\\d]{2}\\/[\\d]{2}$");
-            if (!resultIsMatch)
-                return false;
-            return true;
+            return Regex.IsMatch(value, "^[\\d]{4}\\/[\\d]{2}\\/[\\d]{2}$");
         }
         public static bool IsValidPersianDateWithoutSlash(this string value)
         {
-            var resultIsMatch = Regex.IsMatch(value, "^[\\d]{4}[\\d]{2}[\\d]{2}$");
-            if (!resultIsMatch)
+            return Regex.IsMatch(value, "^[\\d]{4}[\\d]{2}[\\d]{2}$");
+        }
+        public static bool IsValidText(this string value, long length)
+        {
+            return Regex.IsMatch(value, "^[0-9a-zA-Z]{" + length + "}$");
+        }
+
+        public static bool IsValidIsin(this string value)
+        {
+            return Regex.IsMatch(value, "^(IR)([0-9a-zA-Z]{10})$");
+        }
+        public static bool IsValidLegacyCode(this string value)
+        {
+            if (value.Length < 8)
                 return false;
-            return true;
+            var number = value.Substring(value.Length - 5, 5);
+            return Regex.IsMatch(number, "^[0-9]{5}$");
         }
     }
 }

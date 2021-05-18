@@ -1,4 +1,5 @@
-﻿using Qama.Framework.Core.Abstractions.DAL;
+﻿using System;
+using Qama.Framework.Core.Abstractions.DAL;
 
 namespace Qama.Framework.Core.Abstractions.Persistence
 {
@@ -9,5 +10,7 @@ namespace Qama.Framework.Core.Abstractions.Persistence
         void Update(T aggregateRoot);
         void Delete(T aggregateRoot);
         T GetById<TIdType>(Id<TIdType> id);
+        bool HasId(TKey id);
+        bool HasBy(Func<T, bool> predicate);
     }
 }

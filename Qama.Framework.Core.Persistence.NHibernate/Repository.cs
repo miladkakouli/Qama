@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
+using System.Linq;
 using NHibernate;
 using Qama.Framework.Core.Abstractions.DAL;
 using Qama.Framework.Core.Abstractions.Events;
@@ -11,17 +13,15 @@ namespace Qama.Framework.Core.Persistence.NHibernate
     public class Repository<T, TKey> : IRepository<T, TKey>
         where T : AggregateRoot<TKey>
     {
-        private readonly ISession _session;
-        private readonly IEventBus _eventBus;
-        private readonly IEverythingLogger _everythingLogger;
-        private readonly IServiceLocator _serviceLocator;
+        protected readonly ISession _session;
+        protected readonly IEventBus _eventBus;
+        protected readonly IEverythingLogger _everythingLogger;
 
-        public Repository(ISession session, IEventBus eventBus, IEverythingLogger everythingLogger, IServiceLocator serviceLocator)
+        public Repository(ISession session, IEventBus eventBus, IEverythingLogger everythingLogger)
         {
             _session = session;
             _eventBus = eventBus;
             _everythingLogger = everythingLogger;
-            _serviceLocator = serviceLocator;
         }
         public void Add(T aggregateRoot)
         {
@@ -39,6 +39,16 @@ namespace Qama.Framework.Core.Persistence.NHibernate
         public T GetById<TIdType>(Id<TIdType> id)
         {
             return _session.Get<T>(id);
+        }
+
+        public bool HasId(TKey id)
+        {
+            return _session.Query<T>().Any(x => x.Id.Equals(id));
+        }
+
+        public bool HasBy(Func<T, bool> predicate)
+        {
+            return _session.Query<T>().Any(predicate);
         }
 
         public void Update(T aggregateRoot)
