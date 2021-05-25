@@ -53,7 +53,7 @@ namespace Qama.Framework.Core.Logging.WithEvent
             Args = args;
         }
 
-        public new static string GetRoutingKey() => "EventHappened";
+        public override string GetRoutingKey() => "EventHappened";
 
     }
 }

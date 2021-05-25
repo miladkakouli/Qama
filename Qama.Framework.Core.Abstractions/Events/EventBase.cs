@@ -6,15 +6,12 @@ namespace Qama.Framework.Core.Abstractions.Events
 {
     public abstract class EventBase : IEvent, IValidatable
     {
-        public readonly DateTime EventDateTime;
+        public DateTime EventDateTime { get; set; }
         protected EventBase() : base()
         {
             EventDateTime = DateTime.Now;
         }
 
-        public string GetRoutingKey()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract string GetRoutingKey();
     }
 }

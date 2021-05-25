@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using Dapper.Contrib.Extensions;
 using Qama.Framework.Core.Abstractions.DAL;
 using Qama.Framework.Core.Abstractions.Events;
@@ -33,9 +34,19 @@ namespace Qama.Framework.Core.Persistence.Dapper
             PublishEvents(aggregateRoot);
         }
 
-        public T GetById<TIdType>(Id<TIdType> id)
+        public T GetById(TKey id)
         {
             return _dbConnection.Get<T>(id);
+        }
+
+        public bool HasId(TKey id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasBy(Func<T, bool> predicate)
+        {
+            throw new NotImplementedException();
         }
 
         public void Update(T aggregateRoot)

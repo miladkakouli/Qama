@@ -70,7 +70,7 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
                     routingKey: @event.GetRoutingKey());
 
             _channel.BasicQos(0, 1, false);
-            var consumer = new RabbitMQEventHandler<T>(_channel, _serviceLocator.GetInstance<TEventHandler>());
+            var consumer = new RabbitMQEventHandler<T>(_channel, _serviceLocator.GetInstance<TEventHandler>(), _everythingLogger);
             _eventHandlers.Add(consumer);
             _channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
         }
@@ -91,7 +91,7 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
                 routingKey: @event.GetRoutingKey());
 
             _channel.BasicQos(0, 1, false);
-            var consumer = new RabbitMQEventHandler<T>(_channel, (IEventHandler<T>)_serviceLocator.GetInstance(type));
+            var consumer = new RabbitMQEventHandler<T>(_channel, (IEventHandler<T>)_serviceLocator.GetInstance(type), _everythingLogger);
             _eventHandlers.Add(consumer);
             _channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
         }

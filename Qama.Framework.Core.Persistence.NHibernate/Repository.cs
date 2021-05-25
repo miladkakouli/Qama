@@ -36,7 +36,7 @@ namespace Qama.Framework.Core.Persistence.NHibernate
             PublishEvents(aggregateRoot);
         }
 
-        public T GetById<TIdType>(Id<TIdType> id)
+        public T GetById(TKey id)
         {
             return _session.Get<T>(id);
         }
