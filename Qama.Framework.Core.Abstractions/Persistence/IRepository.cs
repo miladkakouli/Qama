@@ -10,6 +10,7 @@ namespace Qama.Framework.Core.Abstractions.Persistence
         void Update(T aggregateRoot);
         void Delete(T aggregateRoot);
         T GetById(TKey id);
+        T GetBy(Func<T, bool> predicate);
         bool HasId(TKey id);
         bool HasBy(Func<T, bool> predicate);
     }

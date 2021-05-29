@@ -40,7 +40,10 @@ namespace Qama.Framework.Core.Persistence.NHibernate
         {
             return _session.Get<T>(id);
         }
-
+        public T GetBy(Func<T, bool> predicate)
+        {
+            return _session.Query<T>().FirstOrDefault(predicate);
+        }
         public bool HasId(TKey id)
         {
             return _session.Query<T>().Any(x => x.Id.Equals(id));
