@@ -17,7 +17,7 @@ namespace Qama.Framework.Application.Abstractions
         }
 
         [HttpPost]
-        public async Task<IQueryResult> Post(TInput query)
+        public async Task<object> Post(TInput query)
         {
             return await _bus.Dispatch(query.ToQuery());
         }

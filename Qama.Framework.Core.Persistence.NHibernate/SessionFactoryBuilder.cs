@@ -9,7 +9,10 @@ using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Event;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Tool.hbm2ddl;
+using Qama.Framework.Core.Persistence.NHibernate.Listeners;
 
 namespace Qama.Framework.Core.Persistence.NHibernate
 {
@@ -31,6 +34,22 @@ namespace Qama.Framework.Core.Persistence.NHibernate
             modelMapper.AddMappings(mappingAssembly.GetExportedTypes());
             var hbmMapping = modelMapper.CompileMappingForAllExplicitlyAddedEntities();
             configuration.AddDeserializedMapping(hbmMapping, "test");
+            configuration.AppendListeners(ListenerType.PreUpdate, new IPreUpdateEventListener[]
+            {
+                new PreUpdateEventListener(),
+            });
+            configuration.AppendListeners(ListenerType.PostUpdate, new IPostUpdateEventListener[]
+            {
+                new PostUpdateEventListener(),
+            });
+            configuration.AppendListeners(ListenerType.PreInsert, new IPreInsertEventListener[]
+            {
+                new PreInsertEventListener(),
+            });
+            configuration.AppendListeners(ListenerType.PostInsert, new IPostInsertEventListener[]
+            {
+                new PostInsertEventListener(),
+            });
             var session = configuration.BuildSessionFactory();
             return session;
         }

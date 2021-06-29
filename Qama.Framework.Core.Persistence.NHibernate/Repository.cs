@@ -49,9 +49,14 @@ namespace Qama.Framework.Core.Persistence.NHibernate
             return _session.Query<T>().Any(x => x.Id.Equals(id));
         }
 
-        public bool HasBy(Func<T, bool> predicate)
+        public bool Any(Func<T, bool> predicate)
         {
             return _session.Query<T>().Any(predicate);
+        }
+
+        public bool All(Func<T, bool> predicate)
+        {
+            return _session.Query<T>().All(predicate);
         }
 
         public void Update(T aggregateRoot)
