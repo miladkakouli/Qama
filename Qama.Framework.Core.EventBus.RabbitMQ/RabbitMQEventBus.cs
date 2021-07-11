@@ -38,14 +38,12 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
                 type: _rabbitMqOptions.ConnectionType);
             var properties = _channel.CreateBasicProperties();
             properties.Persistent = true;
-
             _everythingLogger.LogDebug($"Publishing an event to {_rabbitMqOptions.Exchange} and Queue " +
                                        $"{@event.GetRoutingKey()}");
             _channel.BasicPublish(exchange: _rabbitMqOptions.Exchange,
                 routingKey: @event.GetRoutingKey(),
                 basicProperties: properties,
                 body: (@event).ToJsonByteArray());
-            _channel.Close();
             return Task.CompletedTask;
         }
 

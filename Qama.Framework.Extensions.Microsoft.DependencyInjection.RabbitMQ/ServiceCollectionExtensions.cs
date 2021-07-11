@@ -18,6 +18,7 @@ namespace Qama.Framework.Extensions.Microsoft.DependencyInjection.RabbitMQ
             services.AddSingleton<T>(x => x.GetService<ISetting<T>>().GetValue());
             services.AddSingleton<IConnection>(x => RabbitMQConnectionFactory.Create(x.GetService<ISetting<T>>().GetValue()));
             services.AddSingleton<IChannelProvider, ChannelProvider>();
+            services.AddScoped<IEventUnitOfWork, RabbitMQEventUnitOfWork>();
             services.AddScoped<IModel>(x => x.GetService<IChannelProvider>().GenerateChannel());
         }
 
