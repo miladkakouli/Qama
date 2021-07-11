@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Qama.Framework.Core.Abstractions.DAL;
 
 namespace Qama.Framework.Core.Abstractions.Persistence
@@ -14,5 +15,6 @@ namespace Qama.Framework.Core.Abstractions.Persistence
         bool HasId(TKey id);
         bool Any(Func<T, bool> predicate);
         bool All(Func<T, bool> predicate);
+        void BulkInsert<TEntity, TKeyEntity>(IEnumerable<TEntity> entities) where TEntity : Entity<TKeyEntity>;
     }
 }

@@ -32,8 +32,9 @@ namespace Qama.Framework.Core.Persistence.NHibernate
 
             var modelMapper = new ModelMapper();
             modelMapper.AddMappings(mappingAssembly.GetExportedTypes());
-            var hbmMapping = modelMapper.CompileMappingForAllExplicitlyAddedEntities();
-            configuration.AddDeserializedMapping(hbmMapping, "test");
+            var hbmMapping = modelMapper.CompileMappingForEachExplicitlyAddedEntity();
+            hbmMapping.WriteAllXmlMapping();
+            configuration.AddDeserializedMapping(modelMapper.CompileMappingForAllExplicitlyAddedEntities(), "test");
             configuration.AppendListeners(ListenerType.PreUpdate, new IPreUpdateEventListener[]
             {
                 new PreUpdateEventListener(),

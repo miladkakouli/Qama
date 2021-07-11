@@ -113,7 +113,6 @@ namespace Qama.Framework.Extensions.Validations
         {
             return Regex.IsMatch(value, "^[0-9a-zA-Z]{" + length + "}$");
         }
-
         public static bool IsValidIsin(this string value)
         {
             return Regex.IsMatch(value, "^(IR)([0-9a-zA-Z]{10})$");
@@ -124,6 +123,49 @@ namespace Qama.Framework.Extensions.Validations
                 return false;
             var number = value.Substring(value.Length - 5, 5);
             return Regex.IsMatch(number, "^[0-9]{5}$");
+        }
+        public static bool IsValidIban(this string value)
+        {
+            if (value.Trim().Length != 26)
+                return false;
+            if (!Regex.IsMatch(value, "^[a-zA-Z0-9]*$"))
+                return false;
+
+            string t = value.Substring(0, 4);
+            string y = value.Substring(4, 22);
+            string u = y + t;
+            u = u.Replace("A", "10")
+                .Replace("B", "11")
+                .Replace("C", "12")
+                .Replace("D", "13")
+                .Replace("E", "14")
+                .Replace("F", "15")
+                .Replace("G", "16")
+                .Replace("H", "17")
+                .Replace("I", "18")
+                .Replace("J", "19")
+                .Replace("K", "20")
+                .Replace("L", "21")
+                .Replace("M", "22")
+                .Replace("N", "23")
+                .Replace("O", "24")
+                .Replace("P", "25")
+                .Replace("Q", "26")
+                .Replace("R", "27")
+                .Replace("S", "28")
+                .Replace("T", "29")
+                .Replace("U", "30")
+                .Replace("V", "31")
+                .Replace("W", "32")
+                .Replace("X", "33")
+                .Replace("Y", "34")
+                .Replace("Z", "35");
+
+            decimal i = decimal.Parse(u);
+
+            if (i % 97 != 1)
+                return false;
+            return true;
         }
     }
 }
