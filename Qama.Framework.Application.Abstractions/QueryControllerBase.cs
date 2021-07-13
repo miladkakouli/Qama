@@ -10,7 +10,7 @@ namespace Qama.Framework.Application.Abstractions
         where T : QueryBase
         where TInput : IInputDtoQuery<T>
     {
-        private readonly IQueryBus _bus;
+        protected readonly IQueryBus _bus;
         public QueryControllerBase(IQueryBus bus)
         {
             _bus = bus;

@@ -29,7 +29,6 @@ namespace Qama.Framework.Extensions.Microsoft.DependencyInjection.RabbitMQ
             services.AddScoped<T2>();
             services.AddScoped<IEventHandler<T>>(x =>
             {
-                x.GetService<IEventBus>().Subscribe<T, T2>();
                 return new ValidationalEventHandlerDecorator<T>(x.GetService<T2>(), x.GetServices<IValidator<T>>());
             });
         }
@@ -37,12 +36,7 @@ namespace Qama.Framework.Extensions.Microsoft.DependencyInjection.RabbitMQ
             where T2 : class, IEventHandler<T>
             where T : EventBase
         {
-            services.AddScoped<T2>();
-            services.AddScoped<IEventHandler<T>>(x =>
-             {
-                 x.GetService<IEventBus>().Subscribe<T, T2>();
-                 return x.GetService<T2>();
-             });
+            services.AddScoped<IEventHandler<T>, T2>();
         }
 
         public static void AddRabbitMQEventHandlers<T>(this IServiceCollection services, params Type[] types)
@@ -50,12 +44,7 @@ namespace Qama.Framework.Extensions.Microsoft.DependencyInjection.RabbitMQ
         {
             foreach (var type in types)
             {
-                services.AddScoped(type);
-                services.AddScoped(typeof(IEventHandler<T>), x =>
-                {
-                    x.GetService<IEventBus>().Subscribe<T>(type);
-                    return x.GetService(type);
-                });
+                services.AddScoped(typeof(IEventHandler<T>), type);
             }
         }
 
@@ -67,7 +56,6 @@ namespace Qama.Framework.Extensions.Microsoft.DependencyInjection.RabbitMQ
                 services.AddScoped(type);
                 services.AddScoped(typeof(IEventHandler<T>), x =>
                 {
-                    x.GetService<IEventBus>().Subscribe<T>(type);
                     return new ValidationalEventHandlerDecorator<T>((IEventHandler<T>)x.GetService(type),
                         x.GetServices<IValidator<T>>());
                 });

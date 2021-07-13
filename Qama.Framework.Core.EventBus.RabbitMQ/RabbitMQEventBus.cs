@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Qama.Framework.Core.Abstractions.Events;
 using Qama.Framework.Core.Abstractions.Logging;
 using Qama.Framework.Core.Abstractions.ServiceLocator;
 using Qama.Framework.Extensions.Serializer;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace Qama.Framework.Core.EventBus.RabbitMQ
 {
@@ -38,8 +41,8 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
                 type: _rabbitMqOptions.ConnectionType);
             var properties = _channel.CreateBasicProperties();
             properties.Persistent = true;
-            _everythingLogger.LogDebug($"Publishing an event to {_rabbitMqOptions.Exchange} and Queue " +
-                                       $"{@event.GetRoutingKey()}");
+            _everythingLogger.LogInformation($"Publishing an event to {_rabbitMqOptions.Exchange} and Queue " +
+                                             $"{@event.GetRoutingKey()}");
             _channel.BasicPublish(exchange: _rabbitMqOptions.Exchange,
                 routingKey: @event.GetRoutingKey(),
                 basicProperties: properties,
@@ -57,7 +60,7 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
             IDictionary<string, object> args = new Dictionary<string, object>();
             args.Add("x-max-priority ", 10);
 
-            _everythingLogger.LogDebug($"Subscribing TestEvent to {_rabbitMqOptions.Exchange} and Queue " +
+            _everythingLogger.LogInformation($"Subscribing TestEvent to {_rabbitMqOptions.Exchange} and Queue " +
                                        $"{@event.GetRoutingKey()}");
 
             var queueName = _channel.QueueDeclare(queue: @event.GetRoutingKey(),
@@ -69,7 +72,7 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
 
             _channel.BasicQos(0, 1, false);
             var consumer = new RabbitMQEventHandler<T>(_channel, _serviceLocator);
-            _eventHandlers.Add(consumer);
+            //_eventHandlers.Add(consumer);
             _channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
         }
 
@@ -90,7 +93,7 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
 
             _channel.BasicQos(0, 1, false);
             var consumer = new RabbitMQEventHandler<T>(_channel, _serviceLocator);
-            _eventHandlers.Add(consumer);
+            //_eventHandlers.Add(consumer);
             _channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
         }
 

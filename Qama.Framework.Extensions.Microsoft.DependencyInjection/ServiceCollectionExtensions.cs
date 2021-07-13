@@ -105,6 +105,17 @@ namespace Qama.Framework.Extensions.Microsoft.DependencyInjection
                     , x.GetServices<IValidator<T>>()));
         }
 
+        public static void AddCommandHandlerWithTransactionalAndEventsTransactionalDecorator<T, T2>(this IServiceCollection services)
+            where T2 : class, ICommandHandler<T>
+            where T : CommandBase
+        {
+            services.AddScoped<T2>();
+            services.AddScoped<ICommandHandler<T>>(x =>
+                    new EventsTransactionalCommandHandlerDecorator<T>(
+                        new TransactionalCommandHandlerDecorator<T>(x.GetService<T2>(), x.GetService<IUnitOfWork>()),
+                        x.GetService<IEventUnitOfWork>()));
+        }
+
 
 
         public static void AddQueryHandler<T, T2>(this IServiceCollection services)

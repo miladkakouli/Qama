@@ -9,7 +9,7 @@ namespace Qama.Framework.Application.Abstractions
         where T : CommandBase
         where TInput : IInputDtoCommand<T>
     {
-        private readonly ICommandBus _bus;
+        protected readonly ICommandBus _bus;
         public CommandControllerBase(ICommandBus bus)
         {
             _bus = bus;

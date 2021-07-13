@@ -133,7 +133,8 @@ namespace Qama.Framework.Core.Persistence.NHibernate
                 {
                     return null;
                 }
-                entityTable.Columns.Add(columnName, type);
+                if (!entityTable.Columns.Contains(columnName))
+                    entityTable.Columns.Add(columnName, type);
 
                 return new
                 {

@@ -22,23 +22,27 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
             : base(model)
         {
             _serviceLocator = serviceLocator;
-            this.Received += async (sender, args) =>
+            this.Received += RabbitMQEventHandler_ReceivedAsync;
+        }
+
+        private async void RabbitMQEventHandler_ReceivedAsync(object sender, BasicDeliverEventArgs args)
+        {
+            var ss = _serviceLocator.GetInstance<IEverythingLogger>();
+            try
             {
-                try
+                using (var scope = _serviceLocator.GetInstance<IServiceProvider>().CreateScope())
                 {
-                    using (var scope = _serviceLocator.GetInstance<IServiceProvider>().CreateScope())
-                    {
-                        await scope.ServiceProvider.GetService<IEventHandler<T>>()
-                            .Handle(Encoding.UTF8.GetString(args.Body.ToArray()).FromJsonString<T>());
-                    }
+                    ss.LogInformation("1:" + DateTime.Now.ToString());
+                    await scope.ServiceProvider.GetService<IEventHandler<T>>()
+                        .Handle(Encoding.UTF8.GetString(args.Body.ToArray()).FromJsonString<T>());
                 }
-                catch (Exception e)
-                {
-                    model.BasicNack(args.DeliveryTag, false, true);
-                    return;
-                }
-                model.BasicAck(args.DeliveryTag, false);
-            };
+            }
+            catch (Exception e)
+            {
+                this.Model.BasicNack(args.DeliveryTag, false, true);
+            }
+            this.Model.BasicAck(args.DeliveryTag, false);
+            ss.LogInformation("2:" + DateTime.Now.ToString());
         }
     }
 }
