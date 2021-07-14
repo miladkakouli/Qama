@@ -27,12 +27,10 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
 
         private async void RabbitMQEventHandler_ReceivedAsync(object sender, BasicDeliverEventArgs args)
         {
-            var ss = _serviceLocator.GetInstance<IEverythingLogger>();
             try
             {
                 using (var scope = _serviceLocator.GetInstance<IServiceProvider>().CreateScope())
                 {
-                    ss.LogInformation("1:" + DateTime.Now.ToString());
                     await scope.ServiceProvider.GetService<IEventHandler<T>>()
                         .Handle(Encoding.UTF8.GetString(args.Body.ToArray()).FromJsonString<T>());
                 }
@@ -42,7 +40,6 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
                 this.Model.BasicNack(args.DeliveryTag, false, true);
             }
             this.Model.BasicAck(args.DeliveryTag, false);
-            ss.LogInformation("2:" + DateTime.Now.ToString());
         }
     }
 }
