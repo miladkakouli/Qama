@@ -37,13 +37,13 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
             where T : EventBase
         {
             _channel.ExchangeDeclare(
-                exchange: _rabbitMqOptions.Exchange,
-                type: _rabbitMqOptions.ConnectionType);
+                exchange: _rabbitMqOptions.PublishExchange,
+                type: _rabbitMqOptions.PublishConnectionType);
             var properties = _channel.CreateBasicProperties();
             properties.Persistent = true;
-            _everythingLogger.LogInformation($"Publishing an event to {_rabbitMqOptions.Exchange} and Queue " +
+            _everythingLogger.LogInformation($"Publishing an event to {_rabbitMqOptions.PublishExchange} and Queue " +
                                              $"{@event.GetRoutingKey()}");
-            _channel.BasicPublish(exchange: _rabbitMqOptions.Exchange,
+            _channel.BasicPublish(exchange: _rabbitMqOptions.PublishExchange,
                 routingKey: @event.GetRoutingKey(),
                 basicProperties: properties,
                 body: (@event).ToJsonByteArray());
@@ -55,19 +55,19 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
             where TEventHandler : IEventHandler<T>
         {
             var @event = (T)Activator.CreateInstance(typeof(T));
-            _channel.ExchangeDeclare(exchange: _rabbitMqOptions.Exchange, type: _rabbitMqOptions.ConnectionType);
+            _channel.ExchangeDeclare(exchange: _rabbitMqOptions.SubscribeExchange, type: _rabbitMqOptions.SubscribeConnectionType);
             //var @event = new RabbitMQEventBase<T>();
             IDictionary<string, object> args = new Dictionary<string, object>();
             args.Add("x-max-priority ", 10);
 
-            _everythingLogger.LogInformation($"Subscribing TestEvent to {_rabbitMqOptions.Exchange} and Queue " +
+            _everythingLogger.LogInformation($"Subscribing {@event.GetType()} to {_rabbitMqOptions.SubscribeExchange} and Queue " +
                                        $"{@event.GetRoutingKey()}");
 
             var queueName = _channel.QueueDeclare(queue: @event.GetRoutingKey(),
                 durable: true, exclusive: false, autoDelete: false, arguments: args).QueueName;
 
             _channel.QueueBind(queue: queueName,
-                    exchange: _rabbitMqOptions.Exchange,
+                    exchange: _rabbitMqOptions.SubscribeExchange,
                     routingKey: @event.GetRoutingKey());
 
             _channel.BasicQos(0, 1, false);
@@ -79,16 +79,19 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
         public void Subscribe<T>(Type type)
             where T : EventBase
         {
-            _channel.ExchangeDeclare(exchange: _rabbitMqOptions.Exchange, type: _rabbitMqOptions.ConnectionType);
+            _channel.ExchangeDeclare(exchange: _rabbitMqOptions.SubscribeExchange, type: _rabbitMqOptions.SubscribeConnectionType);
             var @event = (T)Activator.CreateInstance(typeof(T));
             IDictionary<string, object> args = new Dictionary<string, object>();
             args.Add("x-max-priority ", 10);
+
+            _everythingLogger.LogInformation($"Subscribing {@event.GetType()} to {_rabbitMqOptions.SubscribeExchange} and Queue " +
+                                             $"{@event.GetRoutingKey()}");
 
             var queueName = _channel.QueueDeclare(queue: @event.GetRoutingKey(),
                 durable: true, exclusive: false, autoDelete: false, arguments: args).QueueName;
 
             _channel.QueueBind(queue: queueName,
-                exchange: _rabbitMqOptions.Exchange,
+                exchange: _rabbitMqOptions.SubscribeExchange,
                 routingKey: @event.GetRoutingKey());
 
             _channel.BasicQos(0, 1, false);
