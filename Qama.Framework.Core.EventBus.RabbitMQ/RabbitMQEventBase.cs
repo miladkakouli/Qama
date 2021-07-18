@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Qama.Framework.Core.Abstractions.Events;
 using Qama.Framework.Core.Abstractions.Logging;
@@ -7,9 +8,16 @@ using RabbitMQ.Client.Events;
 
 namespace Qama.Framework.Core.EventBus.RabbitMQ
 {
-    public class RabbitMQEventBase<T> : BasicDeliverEventArgs where T : EventBase
+    public abstract class RabbitMQEventBase : EventBase
     {
         public RabbitMQEventBase()
         { }
+        public virtual IDictionary<string, object> GetHeaders()
+        {
+            return new Dictionary<string, object>()
+            {
+                {"deploy_mode", 2}
+            };
+        }
     }
 }

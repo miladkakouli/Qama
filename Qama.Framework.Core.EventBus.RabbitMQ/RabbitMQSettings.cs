@@ -1,4 +1,5 @@
-﻿using Qama.Framework.Core.Abstractions.Settings;
+﻿using System.Collections.Generic;
+using Qama.Framework.Core.Abstractions.Settings;
 
 namespace Qama.Framework.Core.EventBus.RabbitMQ
 {
@@ -11,5 +12,7 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
         public string SubscribeConnectionType { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        public Dictionary<string, object> PublishExchangeArgs { get; set; }
+        public Dictionary<string, object> SubscribeExchangeArgs { get; set; }
     }
 }

@@ -38,9 +38,17 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
         {
             _channel.ExchangeDeclare(
                 exchange: _rabbitMqOptions.PublishExchange,
-                type: _rabbitMqOptions.PublishConnectionType);
+                type: _rabbitMqOptions.PublishConnectionType,
+                arguments: _rabbitMqOptions.PublishExchangeArgs);
+
             var properties = _channel.CreateBasicProperties();
-            properties.Persistent = true;
+            properties.Headers = new Dictionary<string, object>();
+            properties.Persistent = @event.Persistent();
+            properties.Priority = @event.Priority();
+            foreach (var header in @event.GetHeaders())
+            {
+                properties.Headers.Add(header);
+            }
             _everythingLogger.LogInformation($"Publishing an event to {_rabbitMqOptions.PublishExchange} and Queue " +
                                              $"{@event.GetRoutingKey()}");
             _channel.BasicPublish(exchange: _rabbitMqOptions.PublishExchange,
@@ -55,20 +63,19 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
             where TEventHandler : IEventHandler<T>
         {
             var @event = (T)Activator.CreateInstance(typeof(T));
-            _channel.ExchangeDeclare(exchange: _rabbitMqOptions.SubscribeExchange, type: _rabbitMqOptions.SubscribeConnectionType);
+            _channel.ExchangeDeclare(exchange: _rabbitMqOptions.SubscribeExchange, type: _rabbitMqOptions.SubscribeConnectionType,
+                arguments: _rabbitMqOptions.SubscribeExchangeArgs);
             //var @event = new RabbitMQEventBase<T>();
-            IDictionary<string, object> args = new Dictionary<string, object>();
-            args.Add("x-max-priority ", 10);
-
             _everythingLogger.LogInformation($"Subscribing {@event.GetType()} to {_rabbitMqOptions.SubscribeExchange} and Queue " +
                                        $"{@event.GetRoutingKey()}");
 
             var queueName = _channel.QueueDeclare(queue: @event.GetRoutingKey(),
-                durable: true, exclusive: false, autoDelete: false, arguments: args).QueueName;
+                durable: true, exclusive: false, autoDelete: false).QueueName;
 
             _channel.QueueBind(queue: queueName,
                     exchange: _rabbitMqOptions.SubscribeExchange,
-                    routingKey: @event.GetRoutingKey());
+                    routingKey: @event.GetRoutingKey(),
+                    arguments: @event.GetQueueArgs());
 
             _channel.BasicQos(0, 1, false);
             var consumer = new RabbitMQEventHandler<T>(_channel, _serviceLocator);
@@ -79,20 +86,19 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
         public void Subscribe<T>(Type type)
             where T : EventBase
         {
-            _channel.ExchangeDeclare(exchange: _rabbitMqOptions.SubscribeExchange, type: _rabbitMqOptions.SubscribeConnectionType);
+            _channel.ExchangeDeclare(exchange: _rabbitMqOptions.SubscribeExchange, type: _rabbitMqOptions.SubscribeConnectionType,
+                arguments: _rabbitMqOptions.SubscribeExchangeArgs);
             var @event = (T)Activator.CreateInstance(typeof(T));
-            IDictionary<string, object> args = new Dictionary<string, object>();
-            args.Add("x-max-priority ", 10);
-
             _everythingLogger.LogInformation($"Subscribing {@event.GetType()} to {_rabbitMqOptions.SubscribeExchange} and Queue " +
                                              $"{@event.GetRoutingKey()}");
 
             var queueName = _channel.QueueDeclare(queue: @event.GetRoutingKey(),
-                durable: true, exclusive: false, autoDelete: false, arguments: args).QueueName;
+                durable: true, exclusive: false, autoDelete: false).QueueName;
 
             _channel.QueueBind(queue: queueName,
                 exchange: _rabbitMqOptions.SubscribeExchange,
-                routingKey: @event.GetRoutingKey());
+                routingKey: @event.GetRoutingKey(),
+                arguments: @event.GetQueueArgs());
 
             _channel.BasicQos(0, 1, false);
             var consumer = new RabbitMQEventHandler<T>(_channel, _serviceLocator);
