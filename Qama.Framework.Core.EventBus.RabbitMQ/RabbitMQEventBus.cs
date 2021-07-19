@@ -70,12 +70,11 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
                                        $"{@event.GetRoutingKey()}");
 
             var queueName = _channel.QueueDeclare(queue: @event.GetRoutingKey(),
-                durable: true, exclusive: false, autoDelete: false).QueueName;
+                durable: true, exclusive: false, autoDelete: false, arguments: @event.GetQueueArgs()).QueueName;
 
             _channel.QueueBind(queue: queueName,
                     exchange: _rabbitMqOptions.SubscribeExchange,
-                    routingKey: @event.GetRoutingKey(),
-                    arguments: @event.GetQueueArgs());
+                    routingKey: @event.GetRoutingKey());
 
             _channel.BasicQos(0, 1, false);
             var consumer = new RabbitMQEventHandler<T>(_channel, _serviceLocator);
@@ -93,12 +92,11 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
                                              $"{@event.GetRoutingKey()}");
 
             var queueName = _channel.QueueDeclare(queue: @event.GetRoutingKey(),
-                durable: true, exclusive: false, autoDelete: false).QueueName;
+                durable: true, exclusive: false, autoDelete: false, arguments: @event.GetQueueArgs()).QueueName;
 
             _channel.QueueBind(queue: queueName,
                 exchange: _rabbitMqOptions.SubscribeExchange,
-                routingKey: @event.GetRoutingKey(),
-                arguments: @event.GetQueueArgs());
+                routingKey: @event.GetRoutingKey());
 
             _channel.BasicQos(0, 1, false);
             var consumer = new RabbitMQEventHandler<T>(_channel, _serviceLocator);

@@ -3,8 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate;
+using NHibernate.Criterion;
+using NHibernate.Engine;
+using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Impl;
+using NHibernate.Linq;
+using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using Qama.Framework.Core.Abstractions.DAL;
@@ -45,23 +52,36 @@ namespace Qama.Framework.Core.Persistence.NHibernate
         {
             return _session.Get<T>(id);
         }
-        public T GetBy(Func<T, bool> predicate)
+        public T2 GetBy<T2>(Expression<Func<T2, bool>> predicate)
+            where T2 : class
         {
-            return _session.Query<T>().FirstOrDefault(predicate);
+            return _session.QueryOver<T2>()
+                .Where(predicate).SingleOrDefault();
         }
         public bool HasId(TKey id)
         {
-            return _session.Query<T>().Any(x => x.Id.Equals(id));
+            return _session.QueryOver<T>()
+                .Where(Restrictions.Eq(Projections.Property<T>(x => x.Id), id))
+                .RowCount() == 1;
         }
 
-        public bool Any(Func<T, bool> predicate)
+        public bool Any(Expression<Func<T, bool>> predicate)
         {
-            return _session.Query<T>().Any(predicate);
+            return _session.QueryOver<T>()
+                .Where(predicate)
+                .RowCount() > 0;
         }
 
-        public bool All(Func<T, bool> predicate)
+        public bool All(Expression<Func<T, bool>> predicate)
         {
-            return _session.Query<T>().All(predicate);
+            return _session.QueryOver<T>()
+                .Select(Projections.Conditional(
+                        Restrictions.EqProperty(
+                                    Projections.RowCount(),
+                                    Projections.SubQuery(QueryOver.Of<T>().Where(predicate).ToRowCountQuery())),
+                                    Projections.Constant(true),
+                    Projections.Constant(false)))
+                .SingleOrDefault<bool>();
         }
 
         public void Update(T aggregateRoot)

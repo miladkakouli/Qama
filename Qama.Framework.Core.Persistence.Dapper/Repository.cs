@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using Dapper.Contrib.Extensions;
 using Qama.Framework.Core.Abstractions.DAL;
 using Qama.Framework.Core.Abstractions.Events;
@@ -39,7 +41,27 @@ namespace Qama.Framework.Core.Persistence.Dapper
             return _dbConnection.Get<T>(id);
         }
 
+        public T2 GetBy<T2>(Expression<Func<T2, bool>> predicate) where T2 : class
+        {
+            throw new NotImplementedException();
+        }
+
         public bool HasId(TKey id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Any(Expression<Func<T, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool All(Expression<Func<T, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void BulkInsert<TEntity, TKeyEntity>(IEnumerable<TEntity> entities) where TEntity : Entity<TKeyEntity>
         {
             throw new NotImplementedException();
         }

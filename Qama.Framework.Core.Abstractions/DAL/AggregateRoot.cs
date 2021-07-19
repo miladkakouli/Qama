@@ -12,18 +12,18 @@ namespace Qama.Framework.Core.Abstractions.DAL
         }
         public virtual IList<EventBase> Events { get; protected set; }
 
-        public void AddEvent(EventBase @event)
+        public virtual void AddEvent(EventBase @event)
         {
-            Events = Events ?? new List<EventBase>();
+            Events ??= new List<EventBase>();
             Events.Add(@event);
         }
 
-        public void RemoveEvent(EventBase @event)
+        public virtual void RemoveEvent(EventBase @event)
         {
             Events?.Remove(@event);
         }
 
-        public void ClearEvents()
+        public virtual void ClearEvents()
         {
             Events?.Clear();
         }
