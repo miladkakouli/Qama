@@ -17,7 +17,6 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
         where T : EventBase
     {
         private readonly IServiceLocator _serviceLocator;
-
         public RabbitMQEventHandler(IModel model, IServiceLocator serviceLocator)
             : base(model)
         {
@@ -38,6 +37,7 @@ namespace Qama.Framework.Core.EventBus.RabbitMQ
             catch (Exception e)
             {
                 this.Model.BasicNack(args.DeliveryTag, false, true);
+                throw;
             }
             this.Model.BasicAck(args.DeliveryTag, false);
         }

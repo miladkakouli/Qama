@@ -18,8 +18,12 @@ namespace Qama.Framework.Extensions.Microsoft.DependencyInjection.RabbitMQ
             services.AddSingleton<T>(x => x.GetService<ISetting<T>>().GetValue());
             services.AddSingleton<IConnection>(x => RabbitMQConnectionFactory.Create(x.GetService<ISetting<T>>().GetValue()));
             services.AddSingleton<IChannelProvider, ChannelProvider>();
-            services.AddScoped<IEventUnitOfWork, RabbitMQEventUnitOfWork>();
             services.AddScoped<IModel>(x => x.GetService<IChannelProvider>().GenerateChannel());
+        }
+
+        public static void AddRabitMqEventBusTX(this IServiceCollection services)
+        {
+            services.AddScoped<IEventUnitOfWork, RabbitMQEventUnitOfWork>();
         }
 
         public static void AddRabbitMQEventHandlerWithValidationDecorator<T, T2>(this IServiceCollection services)
